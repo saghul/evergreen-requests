@@ -30,9 +30,6 @@ Create a set of unsent Requests::
 
 Send them all at the same time::
 
-    >>> list(requests.map(rs))
+    >>> list(requests.imap(rs))
     [<Response [200]>, <Response [200]>, <Response [200]>, <Response [200]>, <Response [200]>]
-
-Note that the ``map()`` function returns an iterator which will yield results as they happen, in arbitrary
-order.
 
