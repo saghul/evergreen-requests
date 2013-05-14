@@ -1,7 +1,7 @@
 evergreen-requests
 ==================
 
-This module contains an asynchronous replica of ``requests``, API to be used together
+This module contains an asynchronous replica of the ``requests`` API to be used together
 with evergreen, allowing you to make asynchronous HTTP requests easily.
 
 All API methods return a ``Request`` instance (as opposed to ``Response``). A list of
