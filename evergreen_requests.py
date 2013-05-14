@@ -2,15 +2,14 @@
 from functools import partial
 from operator import methodcaller
 
-from evergreen import patcher
-from evergreen.futures import TaskPoolExecutor
+from evergreen import futures, patcher
 
 # Monkey-patch.
 requests = patcher.import_patched('requests')
 
 __version__ = '0.0.1'
 
-__all__ = ['map', 'get', 'options', 'head', 'post', 'put', 'patch', 'delete', 'request', '__version__']
+__all__ = ['map', 'imap', 'get', 'options', 'head', 'post', 'put', 'patch', 'delete', 'request', '__version__']
 
 # Export same items as vanilla requests
 __requests_imports__ = ['utils', 'session', 'Session', 'codes', 'RequestException', 'Timeout', 'URLRequired', 'TooManyRedirects', 'HTTPError', 'ConnectionError']
@@ -67,15 +66,33 @@ def request(method, url, **kwargs):
 
 
 def map(reqs, concurrency=10):
-    """Concurrently converts a list of Requests to Responses.
+    """Concurrently converts a list of Requests to Responses. Results are yielded
+    in order even if requests are performed concurrently.
 
     :param reqs: a collection of AsyncRequest objects.
     :param concurrency: Specifies the number of requests to make at a time. Defaults to 10.
     """
 
     def result_iterator():
-        with TaskPoolExecutor(concurrency) as executor:
-            for r in executor.map(methodcaller('send'), list(reqs)):
-                yield r
+        with futures.TaskPoolExecutor(concurrency) as e:
+            fs = [e.submit(r.send) for r in reqs]
+            for f in fs:
+                yield f.get()
+    return result_iterator()
+
+
+def imap(reqs, concurrency=10):
+    """Concurrently converts a list of Requests to Responses. Results are yielded
+    in arbitrary order, as soon as requests complete.
+
+    :param reqs: a collection of AsyncRequest objects.
+    :param concurrency: Specifies the number of requests to make at a time. Defaults to 10.
+    """
+
+    def result_iterator():
+        with futures.TaskPoolExecutor(concurrency) as e:
+            fs = [e.submit(r.send) for r in reqs]
+            for f in futures.as_completed(fs):
+                yield f.get()
     return result_iterator()
 

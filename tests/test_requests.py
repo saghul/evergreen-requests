@@ -27,6 +27,13 @@ class RequestsTest(unittest.TestCase):
         resp = requests.map(reqs, concurrency=N)
         self.assertEqual([r.url for r in resp], URLS)
 
+    def test_imap(self):
+        reqs = [requests.get(url) for url in URLS]
+        i = 0
+        for i, r in enumerate(requests.imap(reqs, concurrency=N)):
+            self.assertTrue(r.url in URLS)
+        self.assertEqual(i, N - 1)
+
     def test_hooks(self):
         result = {}
 
