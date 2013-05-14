@@ -2,12 +2,12 @@ evergreen-requests
 ==================
 
 This module contains an asynchronous replica of the ``requests`` API to be used together
-with evergreen, allowing you to make asynchronous HTTP requests easily.
+with `evergreen <https://github.com/saghul/evergreen>`_, allowing you to make asynchronous HTTP requests easily.
 
 All API methods return a ``Request`` instance (as opposed to ``Response``). A list of
 requests can be sent with ``map()``.
 
-This is a port to of Kenneth Reitz's grequests (https://github.com/kennethreitz/grequests) module.
+This is a port to of Kenneth Reitz's `grequests <https://github.com/kennethreitz/grequests>`_ module.
 
 Usage
 -----
